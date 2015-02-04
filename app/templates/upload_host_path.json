@@ -1,6 +1,0 @@
-{
-	"staging_host":"staging-1.ec2.scootr.no",
-	"staging_remote_root_path":"/var/www/<%= appname %>/",
-	"production_host":"ep.tagstudio.no",
-	"production_remote_root_path":"/var/www/<%= appname %>/"
-} 

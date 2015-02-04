@@ -1,0 +1,12 @@
+{
+  "staging" : 
+  {
+    "host"                  : "staging-1.ec2.scootr.no",
+    "remote_root_path"      : "/var/www/<%= appname %>/"
+  },
+  "production" : 
+  {
+    "host"                  : "ep.tagstudio.no",
+    "remote_root_path"      : "/var/www/<%= appname %>/"
+  }
+} 
