@@ -1,0 +1,11 @@
+node_modules
+dist
+.tmp<% if (includeSass) { %>
+.sass-cache<% } %>
+bower_components
+
+upload_host_path.json
+
+.DS_Store
+ep/www/*
+!ep/www/api
