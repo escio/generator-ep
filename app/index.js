@@ -32,6 +32,7 @@ module.exports = yeoman.generators.Base.extend({
     // welcome message
     if (!this.options['skip-welcome-message']) {
       this.log(require('yosay')());
+      this.appname = this.appname.replace(/\s+/g, '.');
       this.log(chalk.white('Prosjektnavn vil være samme som foldername: '+ this.appname));
       this.log(chalk.magenta(
         'Basert på yo webapp generator lages nå oppsett for EP utvikling'+
@@ -40,18 +41,22 @@ module.exports = yeoman.generators.Base.extend({
     }
 
     var prompts = [{
-      type: 'checkbox',
-      name: 'features',
-      message: 'What more would you like?',
+      type: 'list',
+      name: 'styleframework',
+      message: 'Velg rammeverk?',
       choices: [{
-        name: 'Bootstrap',
-        value: 'includeBootstrap',
-        checked: false
-      },{
         name: 'Foundation',
         value: 'includeFoundation',
-        checked: true
       },{
+        name: 'Bootstrap',
+        value: 'includeBootstrap',
+      }]
+    },
+    {
+      type: 'checkbox',
+      name: 'features',
+      message: 'Hvilke features vil du ha med?',
+      choices: [{
         name: 'Sass',
         value: 'includeSass',
         checked: true
@@ -75,16 +80,21 @@ module.exports = yeoman.generators.Base.extend({
 
     this.prompt(prompts, function (answers) {
       var features = answers.features;
+      var styleframework = answers.styleframework;
 
       function hasFeature(feat) {
         return features && features.indexOf(feat) !== -1;
       }
-      this.appName =  
+
+      function hasFramework(feat) {
+        return styleframework && styleframework.indexOf(feat) !== -1;
+      }
 
       this.includeSass = hasFeature('includeSass');
-      this.includeFoundation = hasFeature('includeFoundation');
-      this.includeBootstrap = hasFeature('includeBootstrap');
+      this.includeFoundation = hasFramework('includeFoundation');
+      this.includeBootstrap = hasFramework('includeBootstrap');
       this.includeModernizr = hasFeature('includeModernizr');
+      this.log('includeFoundation '+ this.includeFoundation);
 
       this.includeLibSass = answers.libsass;
       this.includeRubySass = !answers.libsass;
@@ -94,17 +104,14 @@ module.exports = yeoman.generators.Base.extend({
   },
 
   secretJSON: function () {
-    this.log('Secret json lages');
     this.copy('secret.json', 'secret.json');
   },
   
   hostpathJSON: function () {
-    this.log('hostpath json lages');
     this.template('upload_host_path.json', 'upload_host_path.json');
   },
 
   gruntfile: function () {
-    this.log('Gruntfil json lages');
     this.template('Gruntfile.js');
   },
 
