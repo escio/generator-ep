@@ -44,7 +44,7 @@ module.exports = function (grunt) {
   
   grunt.initConfig({
     
-    properties : grunt.file.readJSON( 'upload_host_path.json' ),
+    ep_config : grunt.file.readJSON( 'scootr_ep_config.json' ),
     config : config,
     secret : secret,
     sshprod : sshprod,
@@ -352,7 +352,7 @@ module.exports = function (grunt) {
           uploadProduction:{
               options: {
                 createDirectories: true,
-                host: '<%%= properties.production_host %>',
+                host: '<%%= ep_config.production.host %>',
                 username: '<%%= sshprod.username %>',
                 password: '<%%= sshprod.password %>',
                 path: '<%%= sshprod.releasepath %>',
@@ -363,10 +363,10 @@ module.exports = function (grunt) {
             },
          uploadStagingSingular:{
               options: {
-                host: '<%%= properties.staging_host %>',
+                host: '<%%= ep_config.staging.host %>',
                 username: '<%%= secret.username %>',
                 password: '<%%= secret.password %>',
-                path: '<%%= properties.staging_remote_root_path %>',
+                path: '<%%= ep_config.staging.remote_root_path %>',
                 srcBasePath: '<%%= config.ep %>/',
                 showProgress: true
               },
@@ -374,10 +374,10 @@ module.exports = function (grunt) {
             },
           uploadStagingTemplates:{
             options: {
-              host: '<%%= properties.staging_host %>',
+              host: '<%%= ep_config.staging.host %>',
               username: '<%%= secret.username %>',
               password: '<%%= secret.password %>',
-              path: '<%%= properties.staging_remote_root_path %>',
+              path: '<%%= ep_config.staging.remote_root_path %>',
               srcBasePath: '<%%= config.ep %>/',
               showProgress: true
             },
@@ -385,10 +385,10 @@ module.exports = function (grunt) {
           },
           uploadStagingScripts:{
             options: {
-              host: '<%%= properties.staging_host %>',
+              host: '<%%= ep_config.staging.host %>',
               username: '<%%= secret.username %>',
               password: '<%%= secret.password %>',
-              path: '<%%= properties.staging_remote_root_path %>www',
+              path: '<%%= ep_config.staging.remote_root_path %>www',
               srcBasePath: '<%%= config.epDist %>/',
               showProgress: true,
               createDirectories: true,
@@ -397,10 +397,10 @@ module.exports = function (grunt) {
           },
           uploadStagingStyles:{
             options: {
-              host: '<%%= properties.staging_host %>',
+              host: '<%%= ep_config.staging.host %>',
               username: '<%%= secret.username %>',
               password: '<%%= secret.password %>',
-              path: '<%%= properties.staging_remote_root_path %>www',
+              path: '<%%= ep_config.staging.remote_root_path %>www',
               srcBasePath: '<%%= config.epDist %>/',
               showProgress: true,
               createDirectories: true,
@@ -413,17 +413,17 @@ module.exports = function (grunt) {
             //If there are more folders that need symlink, add below. F.eks api, lib, fonts and so on
             command: '<%%= sshprod.command%>',
             options: {
-              host: '<%%= properties.production_host %>',
+              host: '<%%= ep_config.production.host %>',
               username: '<%%= sshprod.username %>',
               password: '<%%= sshprod.password %>'
             }
           },
           staging: {
-            command: ['echo "<%%= secret.password %>" | sudo -S chown -R :scootr-www <%%= properties.staging_remote_root_path %>/www/scripts',
-                'echo "<%%= secret.password %>" | sudo -S chown -R :scootr-www <%%= properties.staging_remote_root_path %>/www/styles',
-                'echo "<%%= secret.password %>" | sudo -S chown -R :scootr-www <%%= properties.staging_remote_root_path %>/templates'],
+            command: ['echo "<%%= secret.password %>" | sudo -S chown -R :scootr-www <%%= ep_config.staging.remote_root_path %>/www/scripts',
+                'echo "<%%= secret.password %>" | sudo -S chown -R :scootr-www <%%= ep_config.staging.remote_root_path %>/www/styles',
+                'echo "<%%= secret.password %>" | sudo -S chown -R :scootr-www <%%= ep_config.staging.remote_root_path %>/templates'],
             options: {
-              host: '<%%= properties.staging_host %>',
+              host: '<%%= ep_config.staging.host %>',
               username: '<%%= secret.username %>',
               password: '<%%= secret.password %>'
             }
@@ -525,7 +525,7 @@ module.exports = function (grunt) {
     var split = process.env.prodcredentials.split(':');
     var username = split[0];
     var password = split[1];
-    var releasePath = grunt.config.get('properties.production_remote_root_path')+'scootr_releases/'+process.env.tag;
+    var releasePath = grunt.config.get('ep_config.production.remote_root_path')+'scootr_releases/'+process.env.tag;
     grunt.config('sshprod.username', username);
     grunt.config('sshprod.password', password);
     grunt.config('sshprod.releasepath', releasePath);
@@ -533,19 +533,19 @@ module.exports = function (grunt) {
 
   function buildSymlinkCommand() {
     var symlinkCommand = ['echo "<%%= sshprod.password %>" | sudo -S chown -R :scootr-www <%%= sshprod.releasepath %>',
-                'ln -sfn <%%= sshprod.releasepath %>/www/styles <%%= properties.production_remote_root_path %>www/styles',
-                'ln -sfn <%%= sshprod.releasepath %>/www/images <%%= properties.production_remote_root_path %>www/images',
-                'ln -sfn <%%= sshprod.releasepath %>/www/scripts <%%= properties.production_remote_root_path %>www/scripts',
-                'ln -sfn <%%= sshprod.releasepath %>/templates <%%= properties.production_remote_root_path %>templates'
+                'ln -sfn <%%= sshprod.releasepath %>/www/styles <%%= ep_config.production.remote_root_path %>www/styles',
+                'ln -sfn <%%= sshprod.releasepath %>/www/images <%%= ep_config.production.remote_root_path %>www/images',
+                'ln -sfn <%%= sshprod.releasepath %>/www/scripts <%%= ep_config.production.remote_root_path %>www/scripts',
+                'ln -sfn <%%= sshprod.releasepath %>/templates <%%= ep_config.production.remote_root_path %>templates'
                 ];
     if(grunt.file.exists(grunt.config.get('config.ep')+'/lib')) {
-      symlinkCommand.push('ln -sfn <%%= sshprod.releasepath %>/lib <%%= properties.production_remote_root_path %>lib');
+      symlinkCommand.push('ln -sfn <%%= sshprod.releasepath %>/lib <%%= ep_config.production.remote_root_path %>lib');
     }
     if(grunt.file.exists(grunt.config.get('config.ep')+'/www/api')) {
-      symlinkCommand.push('ln -sfn <%%= sshprod.releasepath %>/www/api <%%= properties.production_remote_root_path %>www/api');
+      symlinkCommand.push('ln -sfn <%%= sshprod.releasepath %>/www/api <%%= ep_config.production.remote_root_path %>www/api');
     }
     if(grunt.file.exists(grunt.config.get('config.ep')+'/www/fonts')) {
-      symlinkCommand.push('ln -sfn <%%= sshprod.releasepath %>/www/fonts <%%= properties.production_remote_root_path %>www/fonts');
+      symlinkCommand.push('ln -sfn <%%= sshprod.releasepath %>/www/fonts <%%= ep_config.production.remote_root_path %>www/fonts');
     }
     grunt.config('sshprod.command', symlinkCommand);
   }
