@@ -108,7 +108,7 @@ module.exports = yeoman.generators.Base.extend({
   },
   
   hostpathJSON: function () {
-    this.template('upload_host_path.json', 'upload_host_path.json');
+    this.template('scootr_ep_config.json', 'scootr_ep_config.json');
   },
 
   gruntfile: function () {
