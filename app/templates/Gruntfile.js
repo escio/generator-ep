@@ -54,6 +54,10 @@ module.exports = function (grunt) {
     
     
     watch : { 
+      bower: {
+        files: ['bower.json'],
+        tasks: ['wiredep']
+      },
       js: {
         options: {
           spawn: false
@@ -219,10 +223,12 @@ module.exports = function (grunt) {
     
     // Compiles Sass to CSS and generates necessary files if requested
     sass: {
-      options: {
-        //sourcemap: true,
-        loadPath: ['bower_components']
-      },
+      options: {<% if (includeLibSass) { %>
+        sourceMap: true,
+        includePaths: ['bower_components']
+        <% } else { %>
+        loadPath: 'bower_components'
+      <% } %>},
       dist: {
         files: [{
           expand: true,
@@ -253,7 +259,19 @@ module.exports = function (grunt) {
     },
     
     
-    
+    // Automatically inject Bower components into the HTML file
+    wiredep: {
+      app: {
+        ignorePath: /^<%= config.app %>\/|\.\.\//,
+        src: ['<%%= config.app %>/index.html']<% if (includeBootstrap) { %>,<% if (includeSass) { %>
+        exclude: ['bower_components/bootstrap-sass-official/assets/javascripts/bootstrap.js']<% } else { %>
+        exclude: ['bower_components/bootstrap/dist/js/bootstrap.js']<% } } %>
+      }<% if (includeSass) { %>,
+      sass: {
+        src: ['<%%= config.app %>/styles/{,*/}*.{scss,sass}'],
+        ignorePath: /(\.\.\/){1,2}bower_components\//
+      }<% } %>
+    },    
     
     
     
@@ -451,6 +469,7 @@ module.exports = function (grunt) {
   
   grunt.registerTask('serve', [
       'clean:server',
+      'wiredep',
       'sass:dist',
       'copy:styles',
       'connect:livereload',
@@ -481,6 +500,7 @@ module.exports = function (grunt) {
     }
     grunt.task.run([
       'clean:dist',         //Clean ep/www folder
+      'wiredep',
       'useminPrepare',      //Prepare concatenation, minifying and uglifying based on usemin-blocks in index.html
       'sass:dist',
       'copy:styles',
