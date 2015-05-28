@@ -393,7 +393,7 @@ module.exports = function (grunt) {
               createDirectories: true,
             },
             files: {
-                './': '<%= config.dist %>/images/{,*/}*.{png,jpg,gif}'
+                './': '<%= config.epDist %>/images/{,*/}*.{png,jpg,gif}'
             }
           },
           uploadStagingScripts:{
