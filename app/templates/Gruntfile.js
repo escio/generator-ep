@@ -185,25 +185,6 @@ module.exports = function (grunt) {
 
 
 
-    //Karma test runner
-    karma : {
-      options : {
-        configFile : 'karma.conf.js'
-      },
-      unit : {
-        singleRun : true,
-        autoWatch : true,
-        background : true,
-        browsers : ['Chrome', 'Firefox']
-      },
-      continuous : {
-        singleRun : true,
-        browsers: ['PhantomJS']
-      }
-    },
-    
-    
-    
     
     // Make sure code styles are up to par and there are no obvious mistakes
     jshint: {
@@ -401,6 +382,20 @@ module.exports = function (grunt) {
             },
             files:{'./':'<%%= config.ep %>/templates/{,*/}*.tpl'} 
           },
+          uploadStagingImages:{
+            options: {
+              host: '<%= ep_config.staging.host %>',
+              username: '<%= secret.username %>',
+              password: '<%= secret.password %>',
+              path: '<%= ep_config.staging.remote_root_path %>www',
+              srcBasePath: '<%= config.epDist %>/',
+              showProgress: true,
+              createDirectories: true,
+            },
+            files: {
+                './': '<%= config.dist %>/images/{,*/}*.{png,jpg,gif}'
+            }
+          },
           uploadStagingScripts:{
             options: {
               host: '<%%= ep_config.staging.host %>',
@@ -456,7 +451,6 @@ module.exports = function (grunt) {
 
   grunt.renameTask( 'watch', 'watchserver' );
   grunt.loadNpmTasks( 'grunt-contrib-watch' );
-  grunt.loadNpmTasks( 'grunt-karma' );
   
   
   grunt.event.on('watch', function(action, filepath ) {        
