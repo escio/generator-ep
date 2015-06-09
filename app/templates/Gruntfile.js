@@ -384,16 +384,16 @@ module.exports = function (grunt) {
           },
           uploadStagingImages:{
             options: {
-              host: '<%= ep_config.staging.host %>',
-              username: '<%= secret.username %>',
-              password: '<%= secret.password %>',
-              path: '<%= ep_config.staging.remote_root_path %>www',
-              srcBasePath: '<%= config.epDist %>/',
+              host: '<%%= ep_config.staging.host %>',
+              username: '<%%= secret.username %>',
+              password: '<%%= secret.password %>',
+              path: '<%%= ep_config.staging.remote_root_path %>www',
+              srcBasePath: '<%%= config.epDist %>/',
               showProgress: true,
               createDirectories: true,
             },
             files: {
-                './': '<%= config.epDist %>/images/{,*/}*.{png,jpg,gif}'
+                './': '<%%= config.epDist %>/images/{,*/}*.{png,jpg,gif}'
             }
           },
           uploadStagingScripts:{

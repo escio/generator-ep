@@ -3,6 +3,7 @@
 var join = require('path').join;
 var yeoman = require('yeoman-generator');
 var chalk = require('chalk');
+var _ = require('lodash');
 
 module.exports = yeoman.generators.Base.extend({
   constructor: function () {
@@ -112,7 +113,7 @@ module.exports = yeoman.generators.Base.extend({
   },
 
   gruntfile: function () {
-    this.template('Gruntfile.js');
+    this.template('Gruntfile.js', 'Gruntfile.js');
   },
 
   packageJSON: function () {
