@@ -41,16 +41,29 @@ module.exports = yeoman.generators.Base.extend({
       ));
     }
 
-    var prompts = [{
+    var prompts = [
+    {
+      type: 'list',
+      name: 'company',
+      message: 'Velg miljø?',
+      choices: [{
+        name: 'Escio',
+        value: 'escio',
+      },{
+        name: 'Scootr',
+        value: 'scootr',
+      }]
+    },
+    {
       type: 'list',
       name: 'styleframework',
       message: 'Velg rammeverk?',
       choices: [{
-        name: 'Foundation',
-        value: 'includeFoundation',
-      },{
         name: 'Bootstrap',
         value: 'includeBootstrap',
+      },{
+        name: 'Foundation',
+        value: 'includeFoundation',
       }]
     },
     {
@@ -66,20 +79,15 @@ module.exports = yeoman.generators.Base.extend({
         value: 'includeModernizr',
         checked: true
       }]
-    }, {
-      when: function (answers) {
-        return answers && answers.features &&
-          answers.features.indexOf('includeSass') !== -1;
-      },
-      type: 'confirm',
-      name: 'libsass',
-      value: 'includeLibSass',
-      message: 'Would you like to use libsass? Read up more at \n' +
-        chalk.green('https://github.com/andrew/node-sass#node-sass'),
-      default: false
+    },
+    {
+      type: 'input',
+      name: 'templatePrefix',
+      message: 'Hva skal være prefix på templatefilene? Husk evt bindestrek!  (Blank for ingen prefix)'
     }];
 
     this.prompt(prompts, function (answers) {
+      console.log('Svar:', answers);
       var features = answers.features;
       var styleframework = answers.styleframework;
 
@@ -91,14 +99,24 @@ module.exports = yeoman.generators.Base.extend({
         return styleframework && styleframework.indexOf(feat) !== -1;
       }
 
+      function hasCompany(env) {
+        return company && company.indexOf(env) !== -1;
+      }
+
       this.includeSass = hasFeature('includeSass');
       this.includeFoundation = hasFramework('includeFoundation');
       this.includeBootstrap = hasFramework('includeBootstrap');
       this.includeModernizr = hasFeature('includeModernizr');
-      this.log('includeFoundation '+ this.includeFoundation);
+      this.company = answers.company;
 
-      this.includeLibSass = answers.libsass;
-      this.includeRubySass = !answers.libsass;
+      this.templatePrefix = answers.templatePrefix;
+      if('scootr' === this.company) {
+        this.releasefolder = 'scootr_releases';
+        this.uploadedfilesowner = 'scootr-www';
+      } else if('escio' === this.company) {
+        this.releasefolder = 'escio_releases';
+        this.uploadedfilesowner = 'escio-www';
+      }
 
       done();
     }.bind(this));
@@ -109,7 +127,7 @@ module.exports = yeoman.generators.Base.extend({
   },
   
   hostpathJSON: function () {
-    this.template('scootr_ep_config.json', 'scootr_ep_config.json');
+    this.template('scootr_ep_config.json', this.company+'_ep_config.json');
   },
 
   gruntfile: function () {
@@ -226,12 +244,12 @@ module.exports = yeoman.generators.Base.extend({
     this.directory('ep');
     this.mkdir('ep/templates');
     this.mkdir('ep/templates/static');
-    this.copy('sitemap.tpl', 'ep/templates/sitemap.tpl');
-    this.copy('page-sitemap.tpl', 'ep/templates/page-sitemap.tpl');
-    this.copy('head-metadata.tpl', 'ep/templates/head-metadata.tpl');
-    this.copy('head-title.tpl', 'ep/templates/head-title.tpl');
-    this.copy('static-css.tpl', 'ep/templates/static/static-css.tpl');
-    this.copy('static-javascript.tpl', 'ep/templates/static/static-javascript.tpl');
+    this.copy('sitemap.tpl', 'ep/templates/'+this.templatePrefix+'sitemap.tpl');
+    this.copy('page-sitemap.tpl', 'ep/templates/'+this.templatePrefix+'page-sitemap.tpl');
+    this.copy('head-metadata.tpl', 'ep/templates/'+this.templatePrefix+'head-metadata.tpl');
+    this.copy('head-title.tpl', 'ep/templates/'+this.templatePrefix+'head-title.tpl');
+    this.copy('static-css.tpl', 'ep/templates/static/'+this.templatePrefix+'static-css.tpl');
+    this.copy('static-javascript.tpl', 'ep/templates/static/'+this.templatePrefix+'static-javascript.tpl');
 
   },
 

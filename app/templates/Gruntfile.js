@@ -44,7 +44,7 @@ module.exports = function (grunt) {
   
   grunt.initConfig({
     
-    ep_config : grunt.file.readJSON( 'scootr_ep_config.json' ),
+    ep_config : grunt.file.readJSON( '<%= company %>_ep_config.json' ),
     config : config,
     secret : secret,
     sshprod : sshprod,
@@ -204,12 +204,11 @@ module.exports = function (grunt) {
     
     // Compiles Sass to CSS and generates necessary files if requested
     sass: {
-      options: {<% if (includeLibSass) { %>
+      options: {
         sourceMap: true,
-        includePaths: ['bower_components']
-        <% } else { %>
+        includePaths: ['bower_components'],
         loadPath: 'bower_components'
-      <% } %>},
+      },
       dist: {
         files: [{
           expand: true,
@@ -432,9 +431,9 @@ module.exports = function (grunt) {
             }
           },
           staging: {
-            command: ['echo "<%%= secret.password %>" | sudo -S chown -R :scootr-www <%%= ep_config.staging.remote_root_path %>/www/scripts',
-                'echo "<%%= secret.password %>" | sudo -S chown -R :scootr-www <%%= ep_config.staging.remote_root_path %>/www/styles',
-                'echo "<%%= secret.password %>" | sudo -S chown -R :scootr-www <%%= ep_config.staging.remote_root_path %>/templates'],
+            command: ['echo "<%%= secret.password %>" | sudo -S chown -R :<%= uploadedfilesowner %> <%%= ep_config.staging.remote_root_path %>/www/scripts',
+                'echo "<%%= secret.password %>" | sudo -S chown -R :<%= uploadedfilesowner %> <%%= ep_config.staging.remote_root_path %>/www/styles',
+                'echo "<%%= secret.password %>" | sudo -S chown -R :<%= uploadedfilesowner %> <%%= ep_config.staging.remote_root_path %>/templates'],
             options: {
               host: '<%%= ep_config.staging.host %>',
               username: '<%%= secret.username %>',
@@ -539,14 +538,14 @@ module.exports = function (grunt) {
     var split = process.env.prodcredentials.split(':');
     var username = split[0];
     var password = split[1];
-    var releasePath = grunt.config.get('ep_config.production.remote_root_path')+'scootr_releases/'+process.env.tag;
+    var releasePath = grunt.config.get('ep_config.production.remote_root_path')+'<%= releasefolder %>/'+process.env.tag;
     grunt.config('sshprod.username', username);
     grunt.config('sshprod.password', password);
     grunt.config('sshprod.releasepath', releasePath);
   }
 
   function buildSymlinkCommand() {
-    var symlinkCommand = ['echo "<%%= sshprod.password %>" | sudo -S chown -R :scootr-www <%%= sshprod.releasepath %>',
+    var symlinkCommand = ['echo "<%%= sshprod.password %>" | sudo -S chown -R :<%= uploadedfilesowner %> <%%= sshprod.releasepath %>',
                 'ln -sfn <%%= sshprod.releasepath %>/www/styles <%%= ep_config.production.remote_root_path %>www/styles',
                 'ln -sfn <%%= sshprod.releasepath %>/www/images <%%= ep_config.production.remote_root_path %>www/images',
                 'ln -sfn <%%= sshprod.releasepath %>/www/scripts <%%= ep_config.production.remote_root_path %>www/scripts',
